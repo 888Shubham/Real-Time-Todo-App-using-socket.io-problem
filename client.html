@@ -1,0 +1,62 @@
+<!-- no need to change the prewritten code.
+complete the script tag code. -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Task Management App</title>
+</head>
+
+<body>
+    <div id="task-form">
+        <!-- Create a form to add new tasks -->
+        <form id="create-task-form">
+            <input type="text" id="task-text" placeholder="Enter a new task" required>
+            <button id="create-task" type="submit">Add Task</button>
+        </form>
+    </div>
+
+    <div id="task-list">
+        <!-- Tasks will be displayed here -->
+    </div>
+
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io.connect('http://localhost:3000');
+
+        // -------------------write your code here.--------------------//
+        const createTaskForm = document.getElementById('create-task-form');
+        const taskList = document.getElementById('task-list');
+
+        // Add task event listener
+        createTaskForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const taskText = document.getElementById('task-text').value;
+            if (taskText.trim() !== '') {
+                // Emit 'addTask' event to the server
+                socket.emit('addTask', { text: taskText });
+            }
+        });
+
+        // Listen for 'addTask' events from the server
+        socket.on('addTask', function(task) {
+            // Display the added task in the task list
+            const taskItem = document.createElement('div');
+            taskItem.textContent = task.text;
+            taskList.appendChild(taskItem);
+        });
+
+        // Listen for 'deleteTask' events from the server
+        socket.on('deleteTask', function(taskId) {
+            // Remove the deleted task from the task list
+            const taskItem = document.getElementById(taskId);
+            if (taskItem) {
+                taskItem.remove();
+            }
+        });
+
+    </script>
+</body>
+
+</html>
